@@ -1,5 +1,7 @@
 from pytube import YouTube
 
+PATH = "...."
+
 try:
     yt = YouTube(input("Enter link :"))
 except:
@@ -8,7 +10,7 @@ except:
 myFile = yt.streams.first()
  
 try:  
-    myFile.download('PATH')  
+    myFile.download(PATH)  
 except:  
     print("Some Error!")  
 print('Task Completed!')
