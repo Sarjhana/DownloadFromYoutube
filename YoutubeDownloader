@@ -8,7 +8,7 @@ except:
 myFile = yt.streams.first()
  
 try:  
-    myFile.download('/Users/sarjhana/Documents/')  
+    myFile.download('PATH')  
 except:  
     print("Some Error!")  
 print('Task Completed!')
