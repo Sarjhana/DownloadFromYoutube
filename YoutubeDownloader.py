@@ -1,42 +1,39 @@
-from pytube import YouTube
-from moviepy.editor import *
+import yt_dlp
+import os
+import imageio_ffmpeg as ffmpeg
 
-def download_as_mp3(audio_stream, save_path):
-    audio_file_path = audio_stream.download(save_path)
-    audio_clip = AudioFileClip(audio_file_path)
-    audio_clip.write_audiofile(audio_file_path.replace(".webm", ".mp3").replace(".mp4", ".mp3"))
-    audio_clip.close()
-    os.remove(audio_file_path)
+# user pyenv
 
-def download_as_mp4(video_stream, save_path):
-    video_stream.download(save_path)
+def download_as_mp3(video_url, save_path):
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'outtmpl': os.path.join(save_path, '%(title)s.%(ext)s'),
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+    }
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([video_url])
 
-try:
-    yt = YouTube(input("Enter link: "))
-except:
-    print("Connection Error")
-    exit()
+def download_as_mp4(video_url, save_path):
+    ydl_opts = {
+        'format': 'bestvideo+bestaudio/best',
+        'outtmpl': os.path.join(save_path, '%(title)s.%(ext)s'),
+        'merge_output_format': 'mp4',
+    }
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([video_url])
 
+video_url = input("Enter link: ").strip()
 format_choice = input("Which format do you want to download? (mp4/mp3): ").strip().lower()
+save_path = '/Users/sarjhana/Documents/'
 
 if format_choice == 'mp3':
-    audio_stream = yt.streams.filter(only_audio=True).first()
-    if audio_stream:
-        try:
-            download_as_mp3(audio_stream, '/Users/sarjhana/Documents/')
-        except:
-            print("Some Error!")
-    else:
-        print("Audio stream not found!")
+    download_as_mp3(video_url, save_path)
 elif format_choice == 'mp4':
-    video_stream = yt.streams.filter(file_extension='mp4').first()
-    if video_stream:
-        try:
-            download_as_mp4(video_stream, '/Users/sarjhana/Documents/')
-        except:
-            print("Some Error!")
-    else:
-        print("MP4 stream not found!")
+    download_as_mp4(video_url, save_path)
 else:
     print("Invalid choice!")
 
